@@ -210,7 +210,6 @@ def _create_index(app, model):
 
     # change the query class of this model to our own
     if model.query_class is not flask_sqlalchemy.BaseQuery and model.query_class is not _QueryProxy:
-        print (model.query_class, _QueryProxy)
         model.query_class = type(
             'MultipliedQuery', (model.query_class, _QueryProxy), {}
         )
