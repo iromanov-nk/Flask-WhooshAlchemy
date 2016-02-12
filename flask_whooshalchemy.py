@@ -165,7 +165,7 @@ def whoosh_index(app, model, attempt=1):
     try:
         index = app.whoosh_indexes.get(model.__name__,
                     _create_index(app, model))
-    except OSError:
+    except IOError:
         if attempt >= 5:
             raise
 
