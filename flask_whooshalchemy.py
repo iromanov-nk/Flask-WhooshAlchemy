@@ -152,7 +152,7 @@ class _Searcher(object):
                 limit=limit)
 
 
-def whoosh_index(app, model):
+def whoosh_index(app, model, attempt=1):
     ''' Create whoosh index for ``model``, if one does not exist. If 
     the index exists it is opened and cached. '''
 
@@ -162,8 +162,16 @@ def whoosh_index(app, model):
     if not hasattr(app, 'whoosh_indexes'):
         app.whoosh_indexes = {}
 
-    return app.whoosh_indexes.get(model.__name__,
-                _create_index(app, model))
+    try:
+        index = app.whoosh_indexes.get(model.__name__,
+                    _create_index(app, model))
+    except OSError:
+        if attempt == 5:
+            raise
+
+        index = whoosh_index(app, model, attempt + 1)
+
+    return index
 
 def _get_analyzer(app, model):
     analyzer = getattr(model, '__analyzer__', None)
